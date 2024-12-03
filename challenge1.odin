@@ -1,4 +1,4 @@
- package challenge_1
+package challenge_1
 
 
 import "core:fmt"
@@ -11,47 +11,22 @@ import "core:log"
 
 main :: proc() {
 
-	ipv4 := n.Address_Family.IP4
-	tcp := n.Socket_Protocol.TCP
-
-	//create socket 
-	socket, err := n.create_socket(ipv4, tcp) 
-
-	//handle error
-	if err != nil {
-		fmt.println("error creating socket")
-		return
-	}
-
-	endpoint , endpoint_parse_ok := n.parse_endpoint("127.0.0.1:80")
-
+	endpoint , endpoint_parse_ok := n.parse_endpoint("127.0.0.1:30")
 
 	if ! endpoint_parse_ok {
-
-			log.errorf("failed to parse endpoint")
-
+			fmt.println("failed to parse endpoint")
+			return
 	}
 
-	defer n.close(socket)
+	listen_socket, err_2 := n.listen_tcp(endpoint)
+	defer n.close(listen_socket)
 
-	err = n.bind(socket,endpoint)
-
-	if err != nil {
-		fmt.println("error binding socket")
+	if err_2 != nil {
+			fmt.println(err_2, "error  starting server")
 		return
 	}
 
 	fmt.println("Server is listening on port:",endpoint) 
-
-
-
-	listen_socket, err_2 := n.listen_tcp(endpoint)
-
-	if err_2 != nil {
-		fmt.println("error  starting server")
-		return
-	}
-
 
 
 	b: bytes.Buffer
